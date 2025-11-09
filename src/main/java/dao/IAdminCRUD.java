@@ -16,4 +16,6 @@ void createAdmin(Administrateur admin);
 	Administrateur getById(int id);
 	
 	List<Administrateur> getAll();
+
+	Administrateur findByEmailAuth(String email);
 }

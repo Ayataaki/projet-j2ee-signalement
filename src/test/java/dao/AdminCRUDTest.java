@@ -51,7 +51,7 @@ public class AdminCRUDTest {
         assertEquals(c.getPrenom(), fetched.getPrenom());
         assertEquals(c.getNomUtilisateur(), fetched.getNomUtilisateur());
         assertEquals(c.getEmailAuth(), fetched.getEmailAuth());
-        assertEquals(c.getMotDePasse(), fetched.getMotDePasse());
+        assertNotEquals("newpassword", fetched.getMotDePasse());
 
         assertNotNull("L'ID de l'admin doit être généré",c.getIdAdmin());
     }
@@ -73,7 +73,9 @@ public class AdminCRUDTest {
         assertEquals("TestModifie", updated.getNom());
         assertEquals(c.getNomUtilisateur(), updated.getNomUtilisateur());
         assertEquals(c.getEmailAuth(), updated.getEmailAuth());
-        assertEquals(c.getMotDePasse(), updated.getMotDePasse());
+        assertNotEquals("newpassword", updated.getMotDePasse());
+        assertTrue(updated.getMotDePasse().length() > 20); // le hash a une longueur plus grande
+
     	
     }
 

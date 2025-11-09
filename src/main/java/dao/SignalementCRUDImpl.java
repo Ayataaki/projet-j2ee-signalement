@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
-import metier.Employe;
 import metier.Signalement;
 import metier.Statut;
 
@@ -18,21 +17,6 @@ public class SignalementCRUDImpl implements ISignalementCRUD{
 	public SignalementCRUDImpl() {
 		this.connection = SingletonConnection.getConnection();
 	}
-
-//	CREATE TABLE IF NOT EXISTS SIGNALEMENT (
-//		    ID_SIGNALEMENT BIGINT PRIMARY KEY AUTO_INCREMENT,
-//		    DESCRIPTION VARCHAR(255) NOT NULL,
-//		    LOCALISATION VARCHAR(255) NOT NULL,
-//		    DATE_CREATION TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//		    IMAGE_PATH VARCHAR(255) NOT NULL,
-//		    STATUT ENUM('new', 'processing', 'final') NOT NULL,
-//		    COMMENTAIRE VARCHAR(255),
-//		    ID_CITOYEN BIGINT,
-//		    FOREIGN KEY (ID_CITOYEN) REFERENCES CITOYEN(ID_CITOYEN)
-//		        ON DELETE CASCADE
-//		        ON UPDATE CASCADE
-//		);
-
 	
 	@Override
 	public void createSignalement(Signalement signalement) {
@@ -86,10 +70,6 @@ public class SignalementCRUDImpl implements ISignalementCRUD{
 	@Override
 	public Signalement updateSignalement(Signalement signalement) {
 
-//		DESCRIPTION, LOCALISATION, DATE_CREATION,"
-//				+ " IMAGE_PATH, STATUT,"
-//				+ "COMMENTAIRE, ID_CITOYEN
-
 		String sql = "UPDATE SIGNALEMENT SET DESCRIPTION = ?, LOCALISATION = ?, DATE_CREATION = ?, IMAGE_PATH = ?, "
 		           + "STATUT = ?, COMMENTAIRE = ?, ID_CITOYEN = ? WHERE ID_SIGNALEMENT = ?";
 
@@ -121,10 +101,6 @@ public class SignalementCRUDImpl implements ISignalementCRUD{
 	@Override
 	public Signalement getById(int id) {
 		
-//		DESCRIPTION, LOCALISATION, DATE_CREATION,"
-//		+ " IMAGE_PATH, STATUT,"
-//		+ "COMMENTAIRE, ID_CITOYEN
-
 		String sql = "SELECT * FROM SIGNALEMENT WHERE ID_SIGNALEMENT = ?";
 		try (PreparedStatement ps = connection.prepareStatement(sql)) {
 			ps.setLong(1, id);

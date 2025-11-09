@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import metier.Administrateur;
+import utils.PasswordHashUtil;
 
 public class AdminCRUDImpl implements IAdminCRUD {
 
@@ -33,10 +34,11 @@ public class AdminCRUDImpl implements IAdminCRUD {
 			ps.setString(5, admin.getLieuNaissance());
 			ps.setString(6, admin.getTelephone());
 			ps.setString(7, admin.getEmail());
-			admin.setEmailAuth(admin.getCin() + "@municipal.ma");
+			admin.setEmailAuth(admin.getCin() + "@service-municipal.ma");
 			ps.setString(8, admin.getEmailAuth());
 			ps.setDate(9, new java.sql.Date(admin.getDateNaissance().getTime()));
-			ps.setString(10, admin.getMotDePasse());
+			String hashedPassword = PasswordHashUtil.hashPassword(admin.getMotDePasse());
+            ps.setString(10, hashedPassword);
 			ps.setDate(11, new java.sql.Date(admin.getDateCreation().getTime()));
 			
 
@@ -88,7 +90,8 @@ public class AdminCRUDImpl implements IAdminCRUD {
 			ps.setString(7, admin.getEmailAuth());
 			ps.setString(8, admin.getNomUtilisateur());
 			ps.setDate(9, new java.sql.Date(admin.getDateNaissance().getTime()));
-			ps.setString(10, admin.getMotDePasse());
+			String hashedPassword = PasswordHashUtil.hashPassword(admin.getMotDePasse());
+            ps.setString(10, hashedPassword);
 			ps.setDate(11, new java.sql.Date(admin.getDateCreation().getTime()));
          
          ps.setLong(12, admin.getIdAdmin());
@@ -163,6 +166,38 @@ public class AdminCRUDImpl implements IAdminCRUD {
             throw new RuntimeException("Erreur lors de la récupération des administrateurs", ex);
         }
         return list;
+	}
+
+	@Override
+	public Administrateur findByEmailAuth(String emailAuth) {
+
+		String sql = "SELECT * FROM ADMINISTRATEUR WHERE EMAIL_AUTH = ?";
+		try (PreparedStatement ps = connection.prepareStatement(sql)) {
+			ps.setString(1, emailAuth);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					Administrateur a = new Administrateur();
+					a.setIdAdmin(rs.getLong("ID_ADMIN"));
+					a.setNom(rs.getString("NOM"));
+					a.setPrenom(rs.getString("PRENOM"));
+					a.setCin(rs.getString("CIN"));
+					a.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
+					a.setTelephone(rs.getString("TELEPHONE"));
+					a.setEmail(rs.getString("EMAIL"));
+					a.setEmailAuth(rs.getString("EMAIL_AUTH"));
+					a.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
+					a.setMotDePasse(rs.getString("MOT_DE_PASSE"));
+					a.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
+					a.setDateCreation(rs.getDate("DATE_CREATION"));
+					return a;
+				}
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Erreur lors de la récupération de l'admin", ex);
+		}
+		return null;
+
 	}
 
 }

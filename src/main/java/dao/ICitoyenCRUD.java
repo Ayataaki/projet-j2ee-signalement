@@ -13,6 +13,8 @@ public interface ICitoyenCRUD {
 	
 	Citoyen getById(int id);
 	
+	Citoyen findByEmailAuth(String email);
+	
 	List<Citoyen> getAll();
 	
 	List<Citoyen> getCitoyenByRegion(Long idRegion);

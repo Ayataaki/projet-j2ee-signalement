@@ -22,10 +22,9 @@ public class Citoyen {
 	
 	public Citoyen(){}
 	
-	public Citoyen(Long idRegion, String nom, String prenom, String cin, String lieuNaissance, String telephone,
-			String email, String motDePasse, Date dateNaissance, Date dateCreation) {
+	public Citoyen(String nom, String prenom, String cin, String lieuNaissance, String telephone,
+			String email, String motDePasse, Date dateNaissance) {
 		super();
-		this.idRegion = idRegion;
 		this.nom = nom;
 		this.prenom = prenom;
 		this.cin = cin;
@@ -36,7 +35,7 @@ public class Citoyen {
 		this.nomUtilisateur = nom + "." + prenom;
 		this.emailAuth = cin + "@municipal.ma";
 		this.dateNaissance = dateNaissance;
-		this.dateCreation = dateCreation;
+		this.dateCreation = new Date();;
 	}
 
 	public Long getIdCitoyen() {

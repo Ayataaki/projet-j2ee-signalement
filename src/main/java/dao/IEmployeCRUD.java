@@ -11,4 +11,6 @@ public interface IEmployeCRUD {
 	Employe updateEmploye(Employe employe);
 	
 	Employe getById(int id);
+
+	Employe findByEmailAuth(String email);
 }

@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 
 import metier.Technicien;
+import utils.PasswordHashUtil;
 
 public class TechnicienCRUDImpl implements ITechnicienCRUD {
 
@@ -41,7 +41,8 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
 			ps.setString(12, t.getNomUtilisateur());
 			t.setEmailAuth(t.getCin() + "@service-municipal.ma");
 			ps.setString(13, t.getEmailAuth());
-			ps.setString(14, t.getMotDePasse());
+			String hashedPassword = PasswordHashUtil.hashPassword(t.getMotDePasse());
+            ps.setString(14, hashedPassword);
 
             ps.executeUpdate();
 
@@ -81,10 +82,8 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
                     t.setEmailAuth(rs.getString("EMAIL_AUTH"));
                     t.setMotDePasse(rs.getString("MOT_DE_PASSE"));
                     return t;
-                }
+                }            
                 
-                
-
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -115,7 +114,8 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
 			ps.setString(12, t.getNomUtilisateur());
 			t.setEmailAuth(t.getCin() + "@service-municipal.ma");
 			ps.setString(13, t.getEmailAuth());
-			ps.setString(14, t.getMotDePasse());
+			String hashedPassword = PasswordHashUtil.hashPassword(t.getMotDePasse());
+            ps.setString(14, hashedPassword);
 			ps.setLong(15, t.getIdTechnicien());
 
 			ps.executeUpdate();
@@ -137,4 +137,40 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
             throw new RuntimeException("Erreur lors de la suppression du technicien", ex);
         }
     }
+
+
+	@Override
+	public Technicien findByEmailAuth(String emailAuth) {
+		
+		String sql = "SELECT * FROM TECHNICIEN WHERE EMAIL_AUTH = ?";
+		try (PreparedStatement ps = connection.prepareStatement(sql)) {
+			ps.setString(1, emailAuth);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					Technicien t = new Technicien();
+					t.setIdTechnicien(rs.getLong("ID_TECHNICIEN"));
+					t.setNom(rs.getString("NOM"));
+					t.setPrenom(rs.getString("PRENOM"));
+					t.setCin(rs.getString("CIN"));
+					t.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
+					t.setTelephone(rs.getString("TELEPHONE"));
+					t.setEmail(rs.getString("EMAIL"));
+					t.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
+					t.setSpecialite(rs.getString("SPECIALITE"));
+					t.setCompetence(rs.getString("COMPETENCE"));
+					t.setDisponibilite(rs.getBoolean("DISPONIBILITE"));
+					t.setDateCreation(rs.getDate("DATE_CREATION"));
+					t.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
+					t.setEmailAuth(rs.getString("EMAIL_AUTH"));
+					t.setMotDePasse(rs.getString("MOT_DE_PASSE"));
+					return t;
+				}
+
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Erreur lors de la récupération du technicien", ex);
+		}
+		return null;
+	}
 }

@@ -18,6 +18,22 @@ public class Administrateur {
 
 	private Date dateNaissance, 
 		dateCreation;
+	
+	
+
+	public Administrateur(String nom, String prenom, String cin,String lieuNaissance,
+			String telephone, String email, String motDePasse, Date dateNaissance) {
+		super();
+		this.nom = nom;
+		this.prenom = prenom;
+		this.cin = cin;
+		this.lieuNaissance = lieuNaissance;
+		this.telephone = telephone;
+		this.email = email;
+		this.motDePasse = motDePasse;
+		this.dateNaissance = dateNaissance;
+	}
+
 
 	public Long getIdAdmin() {
 		return idAdmin;

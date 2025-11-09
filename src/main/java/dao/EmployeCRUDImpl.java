@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
-import metier.Citoyen;
 import metier.Employe;
+import utils.PasswordHashUtil;
 
 public class EmployeCRUDImpl implements IEmployeCRUD{
 
@@ -36,7 +36,8 @@ public class EmployeCRUDImpl implements IEmployeCRUD{
 			ps.setString(7, employe.getEmail());
 			employe.setEmailAuth(employe.getCin() + "@service-municipal.ma");
 			ps.setString(8, employe.getEmailAuth());
-			ps.setString(9, employe.getMotDePasse());
+			String hashedPassword = PasswordHashUtil.hashPassword(employe.getMotDePasse());
+            ps.setString(9, hashedPassword);
 			ps.setDate(10, new java.sql.Date(employe.getDateNaissance().getTime()));
 			ps.setDate(11, new java.sql.Date(employe.getDateCreation().getTime()));
 			if (employe.getIdMunicipal() != null) {
@@ -99,7 +100,8 @@ public class EmployeCRUDImpl implements IEmployeCRUD{
 			ps.setString(7, employe.getEmail());
 			employe.setEmailAuth(employe.getCin() + "@service-municipal.ma");
 			ps.setString(8, employe.getEmailAuth());
-			ps.setString(9, employe.getMotDePasse());
+			String hashedPassword = PasswordHashUtil.hashPassword(employe.getMotDePasse());
+            ps.setString(9, hashedPassword);
 			ps.setDate(10, new java.sql.Date(employe.getDateNaissance().getTime()));
 			ps.setDate(11, new java.sql.Date(employe.getDateCreation().getTime()));
 			if (employe.getIdMunicipal() != null) {
@@ -127,6 +129,40 @@ public class EmployeCRUDImpl implements IEmployeCRUD{
 		String sql = "SELECT * FROM EMPLOYE WHERE ID_EMPLOYE = ?";
 		try (PreparedStatement ps = connection.prepareStatement(sql)) {
 			ps.setLong(1, id);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					Employe e = new Employe();
+					e.setIdEmploye(rs.getLong("ID_EMPLOYE"));
+					e.setNom(rs.getString("NOM"));
+					e.setPrenom(rs.getString("PRENOM"));
+					e.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
+					e.setAdminPriv(rs.getBoolean("ADMIN_PRIVILEGE"));
+					e.setEmailAuth(rs.getString("EMAIL_AUTH"));
+					e.setMotDePasse(rs.getString("MOT_DE_PASSE"));
+					e.setCin(rs.getString("CIN"));
+					e.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
+					e.setTelephone(rs.getString("TELEPHONE"));
+					e.setEmail(rs.getString("EMAIL"));
+					e.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
+					e.setDateCreation(rs.getDate("DATE_CREATION"));
+					e.setIdMunicipal(rs.getLong("ID_MUNICIPAL"));
+					return e;
+				}
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Erreur lors de la récupération de l'employé", ex);
+		}
+		return null;
+	}
+
+
+	@Override
+	public Employe findByEmailAuth(String emailAuth) {
+		
+		String sql = "SELECT * FROM EMPLOYE WHERE EMAIL_AUTH = ?";
+		try (PreparedStatement ps = connection.prepareStatement(sql)) {
+			ps.setString(1, emailAuth);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					Employe e = new Employe();

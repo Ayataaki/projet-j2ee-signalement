@@ -20,14 +20,11 @@ public class Employe {
 	//ADMIN_PRIVILEGE
 	private boolean adminPriv;
 	
-	public Employe () {
-		
-	}
+	public Employe() {}
 
-	public Employe(Long idMunicipal, String nom, String prenom, String cin, String lieuNaissance, String telephone,
-			String email, String motDePasse, Date dateNaissance, Date dateCreation) {
+	public Employe(String nom, String prenom, String cin, String lieuNaissance, String telephone,
+			String email, String motDePasse, Date dateNaissance) {
 		super();
-		this.idMunicipal = idMunicipal;
 		this.nom = nom;
 		this.prenom = prenom;
 		this.cin = cin;
@@ -38,7 +35,6 @@ public class Employe {
 		this.nomUtilisateur = nom + "." + prenom;
 		this.emailAuth = cin + "@municipal.ma";
 		this.dateNaissance = dateNaissance;
-		this.dateCreation = dateCreation;
 	}
 	
 	private Date dateNaissance,

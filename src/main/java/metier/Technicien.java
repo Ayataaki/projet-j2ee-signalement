@@ -24,6 +24,23 @@ public class Technicien {
 	private Date dateNaissance,
 		dateCreation;
 
+	public Technicien(String nom, String prenom, String cin, String lieuNaissance, String telephone,
+			String email, String motDePasse, Date dateNaissance, String specialite, String competence) {
+		super();
+		this.nom = nom;
+		this.prenom = prenom;
+		this.cin = cin;
+		this.lieuNaissance = lieuNaissance;
+		this.telephone = telephone;
+		this.email = email;
+		this.specialite = specialite;
+		this.competence = competence;
+		this.motDePasse = motDePasse;
+		this.dateNaissance = dateNaissance;
+	}
+
+	public Technicien() {}
+
 	public Long getIdTechnicien() {
 		return idTechnicien;
 	}

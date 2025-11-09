@@ -1,6 +1,5 @@
 package dao;
 
-import metier.Employe;
 import metier.Technicien;
 
 public interface ITechnicienCRUD {
@@ -12,4 +11,6 @@ public interface ITechnicienCRUD {
 	Technicien  updateTechnicien (Technicien  technicien);
 	
 	Technicien  getById(int id);
+
+	Technicien findByEmailAuth(String email);
 }

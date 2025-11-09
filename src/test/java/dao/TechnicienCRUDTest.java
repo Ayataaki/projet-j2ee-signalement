@@ -53,7 +53,7 @@ public class TechnicienCRUDTest {
         assertEquals(t.getPrenom(), fetched.getPrenom());
         assertEquals(t.getNomUtilisateur(), fetched.getNomUtilisateur());
         assertEquals(t.getEmailAuth(), fetched.getEmailAuth());
-        assertEquals(t.getMotDePasse(), fetched.getMotDePasse());
+        assertNotEquals("newpassword", fetched.getMotDePasse());
 
         assertNotNull("L'ID du technicien doit être généré", t.getIdTechnicien());
     }

@@ -1,6 +1,5 @@
 package dao;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import java.sql.Connection;
@@ -48,25 +47,6 @@ public class SingletonConnection {
         throw new RuntimeException("Erreur de connexion à la base de données", e);
     }
 }
-
-//    private static void migrateDatabase(String URL,String USER,String PASSWORD) {
-//        System.out.println("Migration Flyway en cours");
-//        Flyway flyway = Flyway.configure()
-//            .dataSource(URL, USER, PASSWORD)
-//            .locations("classpath:db/migration")
-//            .load();
-//     
-//        // Repair failed migrations
-//        // Si une migration est faite avec erreur et après modif dans les fichiers 
-//        // principaux Vy__yy, tu dois exécuter cette ligne
-//        flyway.repair();
-//
-//        //flyway.clean();
-//        
-//        flyway.migrate();
-//        System.out.println("Migration Flyway terminée !");
-//    }
-
     
     private static void migrateDatabase(String URL,String USER,String PASSWORD) {
         try {
@@ -74,7 +54,7 @@ public class SingletonConnection {
             Flyway flyway = Flyway.configure()
                 .dataSource(URL, USER, PASSWORD)
                 .cleanDisabled(false)
-                .outOfOrder(true)  // ← AJOUTEZ CETTE LIGNE
+                .outOfOrder(true)  
                 .load();
             
             flyway.repair();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
 import metier.Citoyen;
+import utils.PasswordHashUtil;
 
 public class CitoyenCRUDImpl implements ICitoyenCRUD{
 	
@@ -31,7 +32,8 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 			citoyen.setEmailAuth(citoyen.getCin() + "@municipal.ma");
 			ps.setString(8, citoyen.getEmailAuth());
 			ps.setDate(9, new java.sql.Date(citoyen.getDateNaissance().getTime()));
-			ps.setString(10, citoyen.getMotDePasse());
+			String hashedPassword = PasswordHashUtil.hashPassword(citoyen.getMotDePasse());
+            ps.setString(10, hashedPassword);
 			ps.setDate(11, new java.sql.Date(citoyen.getDateCreation().getTime()));
 			if (citoyen.getIdRegion() != null) {
 				ps.setLong(12, citoyen.getIdRegion());
@@ -86,7 +88,8 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 			ps.setString(7, citoyen.getEmailAuth());
 			ps.setString(8, citoyen.getNomUtilisateur());
 			ps.setDate(9, new java.sql.Date(citoyen.getDateNaissance().getTime()));
-			ps.setString(10, citoyen.getMotDePasse());
+			String hashedPassword = PasswordHashUtil.hashPassword(citoyen.getMotDePasse());
+            ps.setString(10, hashedPassword);
 			ps.setDate(11, new java.sql.Date(citoyen.getDateCreation().getTime()));
          if (citoyen.getIdRegion() != null) {
              ps.setLong(12, citoyen.getIdRegion());
@@ -200,6 +203,39 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 	        throw new RuntimeException("Erreur lors de la récupération des citoyens", ex);
 	    }
 	    return list;
+	}
+
+	@Override
+	public Citoyen findByEmailAuth(String emailAuth) {
+
+		String sql = "SELECT * FROM CITOYEN WHERE EMAIL_AUTH = ?";
+		try (PreparedStatement ps = connection.prepareStatement(sql)) {
+			ps.setString(1, emailAuth);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					Citoyen c = new Citoyen();
+					c.setIdCitoyen(rs.getLong("ID_CITOYEN"));
+					c.setNom(rs.getString("NOM"));
+					c.setPrenom(rs.getString("PRENOM"));
+					c.setCin(rs.getString("CIN"));
+					c.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
+					c.setTelephone(rs.getString("TELEPHONE"));
+					c.setEmail(rs.getString("EMAIL"));
+					c.setEmailAuth(rs.getString("EMAIL_AUTH"));
+					c.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
+					c.setMotDePasse(rs.getString("MOT_DE_PASSE"));
+					c.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
+					c.setDateCreation(rs.getDate("DATE_CREATION"));
+					c.setIdRegion(rs.getLong("ID_REGION"));
+					return c;
+				}
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Erreur lors de la récupération du citoyen", ex);
+		}
+		return null;
+		
 	}
 
 	

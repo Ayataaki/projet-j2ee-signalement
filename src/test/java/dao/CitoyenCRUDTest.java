@@ -4,6 +4,7 @@ package dao;
 import static org.junit.Assert.*;
 //import static org.junit.Assertion.*;
 
+import java.sql.Connection;
 import java.util.List;
 
 import org.junit.Before;
@@ -17,6 +18,10 @@ public class CitoyenCRUDTest {
 
 	@Before
 	public void setUp() throws Exception {
+		crud = new CitoyenCRUDImpl();
+
+	    Connection conn = SingletonConnection.getConnection();
+	    conn.createStatement().executeUpdate("DELETE FROM CITOYEN");
 	}
 	
 	private Citoyen createTestCitoyen(String nom, String prenom, String cin, String email) {
@@ -49,7 +54,7 @@ public class CitoyenCRUDTest {
         assertEquals(c.getPrenom(), fetched.getPrenom());
         assertEquals(c.getNomUtilisateur(), fetched.getNomUtilisateur());
         assertEquals(c.getEmailAuth(), fetched.getEmailAuth());
-        assertEquals(c.getMotDePasse(), fetched.getMotDePasse());
+        assertNotEquals("newpassword", fetched.getMotDePasse());
     }
 
 	@Test
@@ -81,7 +86,8 @@ public class CitoyenCRUDTest {
         assertEquals("TestModifie", updated.getNom());
         assertEquals(c.getNomUtilisateur(), updated.getNomUtilisateur());
         assertEquals(c.getEmailAuth(), updated.getEmailAuth());
-        assertEquals(c.getMotDePasse(), updated.getMotDePasse());
+        assertNotEquals("newpassword", updated.getMotDePasse());
+        assertTrue(updated.getMotDePasse().length() > 20);
     }
 
 	@Test
