@@ -1,5 +1,7 @@
 package dao;
 
+import java.util.List;
+
 import metier.Employe;
 
 public interface IEmployeCRUD {
@@ -13,4 +15,8 @@ public interface IEmployeCRUD {
 	Employe getById(int id);
 
 	Employe findByEmailAuth(String email);
+	
+	int countEmploye();
+	
+	List<Employe> getAll();
 }

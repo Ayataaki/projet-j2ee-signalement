@@ -53,8 +53,8 @@ public class SignalementCRUDTest {
 		
 		Long id = s.getIdSignalement();
 
-		signalementDAO.deleteSignalement(id.intValue());
-		Signalement deleted = signalementDAO.getById(id.intValue());
+		signalementDAO.deleteSignalement(id.longValue());
+		Signalement deleted = signalementDAO.getById(id.longValue());
 		assertNull("Le signalement supprimé ne doit plus exister", deleted);
 
 	}
@@ -77,7 +77,7 @@ public class SignalementCRUDTest {
 		s.setImagePath("image path - 2 - champs modifié");
 		signalementDAO.updateSignalement(s);
 		
-        Signalement updated = signalementDAO.getById(s.getIdSignalement().intValue());
+        Signalement updated = signalementDAO.getById(s.getIdSignalement().longValue());
         assertEquals("L'image path doit être mis à jour", "image path - 2 - champs modifié", updated.getImagePath());
 		
 		
@@ -98,7 +98,7 @@ public class SignalementCRUDTest {
 
 		signalementDAO.createSignalement(s);
 		
-		Signalement fetched = signalementDAO.getById(s.getIdSignalement().intValue());
+		Signalement fetched = signalementDAO.getById(s.getIdSignalement().longValue());
 		assertNotNull("Le signalement doit être trouvé en base", fetched);
 		assertEquals("L'image path doit correspondre", "image path - 3", fetched.getImagePath());
 

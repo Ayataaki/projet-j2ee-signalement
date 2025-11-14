@@ -48,7 +48,7 @@ public class CitoyenCRUDTest {
 
         assertNotNull("L'ID ne doit pas être null après création", c.getIdCitoyen());
 
-        Citoyen fetched = crud.getById(c.getIdCitoyen().intValue());
+        Citoyen fetched = crud.getById(c.getIdCitoyen().longValue());
         assertNotNull(fetched);
         assertEquals(c.getNom(), fetched.getNom());
         assertEquals(c.getPrenom(), fetched.getPrenom());
@@ -64,8 +64,8 @@ public class CitoyenCRUDTest {
         Long id = c.getIdCitoyen();
         assertNotNull(id);
 
-        crud.deleteCitoyen(id.intValue());
-        Citoyen deleted = crud.getById(id.intValue());
+        crud.deleteCitoyen(id.longValue());
+        Citoyen deleted = crud.getById(id.longValue());
         assertNull("Le citoyen doit être supprimé", deleted);
     }
 
@@ -82,7 +82,7 @@ public class CitoyenCRUDTest {
         c.setMotDePasse("newpassword");
         crud.updateCitoyen(c);
 
-        Citoyen updated = crud.getById(c.getIdCitoyen().intValue());
+        Citoyen updated = crud.getById(c.getIdCitoyen().longValue());
         assertEquals("TestModifie", updated.getNom());
         assertEquals(c.getNomUtilisateur(), updated.getNomUtilisateur());
         assertEquals(c.getEmailAuth(), updated.getEmailAuth());

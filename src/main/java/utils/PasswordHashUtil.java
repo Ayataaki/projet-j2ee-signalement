@@ -1,9 +1,14 @@
 package utils;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.util.Base64;
+
+import dao.CitoyenCRUDImpl;
+import metier.Citoyen;
 
 public class PasswordHashUtil {
     
@@ -21,7 +26,8 @@ public class PasswordHashUtil {
         try {
             MessageDigest md = MessageDigest.getInstance(ALGORITHM);
             md.update(salt);
-            byte[] hashedPassword = md.digest(password.getBytes());
+            byte[] hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8));
+            //byte[] hashedPassword = md.digest(password.getBytes());
 
             byte[] combined = new byte[salt.length + hashedPassword.length];
             System.arraycopy(salt, 0, combined, 0, salt.length);
@@ -56,5 +62,6 @@ public class PasswordHashUtil {
             return false;
         }
     }
+    
     
 }

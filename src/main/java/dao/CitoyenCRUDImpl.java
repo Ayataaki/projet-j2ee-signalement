@@ -32,9 +32,18 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 			citoyen.setEmailAuth(citoyen.getCin() + "@municipal.ma");
 			ps.setString(8, citoyen.getEmailAuth());
 			ps.setDate(9, new java.sql.Date(citoyen.getDateNaissance().getTime()));
+			
 			String hashedPassword = PasswordHashUtil.hashPassword(citoyen.getMotDePasse());
             ps.setString(10, hashedPassword);
-			ps.setDate(11, new java.sql.Date(citoyen.getDateCreation().getTime()));
+            
+			//ps.setDate(11, new java.sql.Date(citoyen.getDateCreation().getTime()));
+			
+			if (citoyen.getDateCreation() == null) {
+                ps.setDate(11, new java.sql.Date(System.currentTimeMillis()));
+            } else {
+                ps.setDate(11, new java.sql.Date(citoyen.getDateCreation().getTime()));
+            }
+			
 			if (citoyen.getIdRegion() != null) {
 				ps.setLong(12, citoyen.getIdRegion());
 			} else {
@@ -58,7 +67,7 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 	}
 
 	@Override
-	public void deleteCitoyen(int id) {
+	public void deleteCitoyen(Long id) {
 		
 		String sql = "DELETE FROM CITOYEN WHERE ID_CITOYEN = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -70,46 +79,10 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
         }
 		
 	}
+	
 
 	@Override
-	public Citoyen updateCitoyen(Citoyen citoyen) {
-			
-     String sql = "UPDATE CITOYEN SET NOM = ?, PRENOM = ?, CIN = ?, LIEU_NAISSANCE = ?, "
-        		+ "TELEPHONE = ?, EMAIL = ?, EMAIL_AUTH = ?, NOM_UTILISATEUR= ?, DATE_NAISSANCE = ?,"
-        		+ " MOT_DE_PASSE = ?, DATE_CREATION = ?, ID_REGION = ? WHERE ID_CITOYEN = ?";
-        
-     try (PreparedStatement ps = connection.prepareStatement(sql)) {
-    	 	ps.setString(1, citoyen.getNom());
-			ps.setString(2, citoyen.getPrenom());
-			ps.setString(3, citoyen.getCin());
-			ps.setString(4, citoyen.getLieuNaissance());
-			ps.setString(5, citoyen.getTelephone());
-			ps.setString(6, citoyen.getEmail());
-			ps.setString(7, citoyen.getEmailAuth());
-			ps.setString(8, citoyen.getNomUtilisateur());
-			ps.setDate(9, new java.sql.Date(citoyen.getDateNaissance().getTime()));
-			String hashedPassword = PasswordHashUtil.hashPassword(citoyen.getMotDePasse());
-            ps.setString(10, hashedPassword);
-			ps.setDate(11, new java.sql.Date(citoyen.getDateCreation().getTime()));
-         if (citoyen.getIdRegion() != null) {
-             ps.setLong(12, citoyen.getIdRegion());
-         } else {
-             ps.setNull(12, Types.BIGINT);
-         }
-         ps.setLong(13, citoyen.getIdCitoyen());
-
-         ps.executeUpdate();
-         return citoyen;
-
-     } catch (SQLException ex) {
-         ex.printStackTrace();
-         throw new RuntimeException("Erreur lors de la mise à jour du citoyen", ex);
-     }
-
-	}
-
-	@Override
-	public Citoyen getById(int id) {
+	public Citoyen getById(Long id) {
 		String sql = "SELECT * FROM CITOYEN WHERE ID_CITOYEN = ?";
 		try (PreparedStatement ps = connection.prepareStatement(sql)) {
 			ps.setLong(1, id);
@@ -138,6 +111,61 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 		}
 		return null;
 		}
+
+	@Override
+	public Citoyen updateCitoyen(Citoyen citoyen) {
+			
+     String sql = "UPDATE CITOYEN SET NOM = ?, PRENOM = ?, CIN = ?, LIEU_NAISSANCE = ?, "
+        		+ "TELEPHONE = ?, EMAIL = ?, EMAIL_AUTH = ?, NOM_UTILISATEUR= ?, DATE_NAISSANCE = ?,"
+        		+ " MOT_DE_PASSE = ?, ID_REGION = ? WHERE ID_CITOYEN = ?";
+        
+     try (PreparedStatement ps = connection.prepareStatement(sql)) {
+    	 	ps.setString(1, citoyen.getNom());
+			ps.setString(2, citoyen.getPrenom());
+			ps.setString(3, citoyen.getCin());
+			ps.setString(4, citoyen.getLieuNaissance());
+			ps.setString(5, citoyen.getTelephone());
+			ps.setString(6, citoyen.getEmail());
+			ps.setString(7, citoyen.getEmailAuth());
+			ps.setString(8, citoyen.getNomUtilisateur());
+			ps.setDate(9, new java.sql.Date(citoyen.getDateNaissance().getTime()));
+//			String hashedPassword = PasswordHashUtil.hashPassword(citoyen.getMotDePasse());
+//            ps.setString(10, hashedPassword);
+			
+			String motDePasse = citoyen.getMotDePasse();
+	        
+	        // Vérifier si le mot de passe est déjà haché (Base64 = 64 caractères pour notre algo)
+	        if (motDePasse != null && motDePasse.length() == 64) {
+	            // Déjà haché, utiliser tel quel
+	            ps.setString(10, motDePasse);
+	            System.out.println("⚠️ Mot de passe déjà haché, pas de re-hachage");
+	        } else if (motDePasse != null && !motDePasse.isEmpty()) {
+	            // Nouveau mot de passe en clair, le hacher
+	            String hashedPassword = PasswordHashUtil.hashPassword(motDePasse);
+	            ps.setString(10, hashedPassword);
+	        } else {
+	            // Pas de changement de mot de passe, récupérer l'ancien
+	            Citoyen existing = getById((Long) citoyen.getIdCitoyen());
+	            ps.setString(10, existing.getMotDePasse());
+	        }
+			
+         if (citoyen.getIdRegion() != null) {
+             ps.setLong(11, citoyen.getIdRegion());
+         } else {
+             ps.setNull(11, Types.BIGINT);
+         }
+         ps.setLong(12, citoyen.getIdCitoyen());
+
+         ps.executeUpdate();
+         return citoyen;
+
+     } catch (SQLException ex) {
+         ex.printStackTrace();
+         throw new RuntimeException("Erreur lors de la mise à jour du citoyen", ex);
+     }
+
+	}
+
 
 	
 	@Override
@@ -238,5 +266,33 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 		
 	}
 
-	
+	@Override
+	public void updatePwd(String pwd,Long idCitoyen) {
+		String sql = "UPDATE CITOYEN SET MOT_DE_PASSE = ? WHERE ID_CITOYEN = ?";
+	    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+	        ps.setString(1, pwd);
+	        ps.setLong(2, idCitoyen);
+	        ps.executeUpdate();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	@Override
+	public int countCitoyen() {
+		String sql = "SELECT COUNT(*) FROM CITOYEN";
+		try (PreparedStatement ps = connection.prepareStatement(sql)) {
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next())
+					return rs.getInt(1);
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Erreur lors du calcul de total des citoyens", ex);
+		}
+		return 0;
+	}
+
 }

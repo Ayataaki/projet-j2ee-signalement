@@ -39,8 +39,13 @@ public class AdminCRUDImpl implements IAdminCRUD {
 			ps.setDate(9, new java.sql.Date(admin.getDateNaissance().getTime()));
 			String hashedPassword = PasswordHashUtil.hashPassword(admin.getMotDePasse());
             ps.setString(10, hashedPassword);
-			ps.setDate(11, new java.sql.Date(admin.getDateCreation().getTime()));
+			//ps.setDate(11, new java.sql.Date(admin.getDateCreation().getTime()));
 			
+			if (admin.getDateCreation() == null) {
+                ps.setDate(11, new java.sql.Date(System.currentTimeMillis()));
+            } else {
+                ps.setDate(11, new java.sql.Date(admin.getDateCreation().getTime()));
+            }
 
 			ps.executeUpdate();
 

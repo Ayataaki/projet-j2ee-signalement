@@ -8,14 +8,24 @@ import jakarta.servlet.http.HttpServletResponse;
 import metier.Administrateur;
 import metier.Citoyen;
 import metier.Employe;
+import metier.Municipal;
+import metier.Region;
+import metier.Signalement;
 import metier.Technicien;
 import utils.PasswordHashUtil;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import dao.AdminCRUDImpl;
 import dao.CitoyenCRUDImpl;
 import dao.EmployeCRUDImpl;
+import dao.IMunicipalCRUD;
+import dao.ISignalementCRUD;
+import dao.MunicipalCRUDImpl;
+import dao.RegionCRUDImpl;
+import dao.SignalementCRUDImpl;
 import dao.TechnicienCRUDImpl;
 
 
@@ -27,42 +37,152 @@ public class LoginServlet extends HttpServlet {
     private AdminCRUDImpl adminDao = new AdminCRUDImpl();
     private EmployeCRUDImpl employeDAO = new EmployeCRUDImpl();	
     private TechnicienCRUDImpl technicienDAO = new TechnicienCRUDImpl();	
+    private RegionCRUDImpl regionDao = new RegionCRUDImpl();
+    private ISignalementCRUD signalementDao = new SignalementCRUDImpl();
+    private IMunicipalCRUD municipalDao = new MunicipalCRUDImpl();
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public LoginServlet() {
-        super();
-        // TODO Auto-generated constructor stub
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+
+		try {
+			// Charger les régions
+			List<Region> regions = regionDao.getAll();
+			System.out.println("Nombre de régions: " + (regions != null ? regions.size() : 0));
+
+			// Stocker en session
+			request.getSession().setAttribute("regions", regions);
+
+			// Forward vers le JSP
+			request.getRequestDispatcher("/views/Auth/Connexion.jsp").forward(request, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Erreur: " + e.getMessage());
+		}
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-    		throws ServletException, IOException {
-    		
-		String email = request.getParameter("emailAuth");
-        String motDePasse = request.getParameter("motDePasse");
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-        Citoyen citoyen = citoyenDao.findByEmailAuth(email);
-        Administrateur admin = adminDao.findByEmailAuth(email);
-        Technicien technicien = technicienDAO.findByEmailAuth(email);
-        Employe employe = employeDAO.findByEmailAuth(email);
+		String email = request.getParameter("email");
+		String motDePasse = request.getParameter("password");
 
-        if (citoyen != null && PasswordHashUtil.verifyPassword(motDePasse, citoyen.getMotDePasse())) {
-            request.getSession().setAttribute("user", citoyen);
-            response.sendRedirect("citoyen/home.jsp");
-        } else if (admin != null && PasswordHashUtil.verifyPassword(motDePasse, admin.getMotDePasse())) {
-            request.getSession().setAttribute("admin", admin);
-            response.sendRedirect("admin/dashboard.jsp");
-        } else if (technicien != null && PasswordHashUtil.verifyPassword(motDePasse, technicien.getMotDePasse())) {
-            request.getSession().setAttribute("technicien", technicien);
-            response.sendRedirect("technicien/dashboard.jsp");
-        } else if (employe != null && PasswordHashUtil.verifyPassword(motDePasse, employe.getMotDePasse())) {
-            request.getSession().setAttribute("employe", employe);
-            response.sendRedirect("employe/dashboard.jsp");
-        }else {
-            request.setAttribute("error", "Email ou mot de passe incorrect");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        }
+		Citoyen citoyen = citoyenDao.findByEmailAuth(email);
+		Administrateur admin = adminDao.findByEmailAuth(email);
+		Technicien technicien = technicienDAO.findByEmailAuth(email);
+		Employe employe = employeDAO.findByEmailAuth(email);
+
+		if (citoyen != null && PasswordHashUtil.verifyPassword(motDePasse, citoyen.getMotDePasse())) {
+
+			Long idCitoyen = citoyen.getIdCitoyen();
+			
+        	dataSendCitoyen(citoyen,request,response);
+			
+			response.sendRedirect(request.getContextPath() + "/views/Citoyen/DashboardCitoyen.jsp");
+			
+			return;
+
+		} else if (admin != null && PasswordHashUtil.verifyPassword(motDePasse, admin.getMotDePasse())) {
+
+
+        	dataSendAdmin(admin,request,response);
+        	
+			response.sendRedirect(request.getContextPath() + "/views/admin/DashboardAdmin.jsp");
+
+		} else if (technicien != null && PasswordHashUtil.verifyPassword(motDePasse, technicien.getMotDePasse())) {
+			
+			request.getSession().setAttribute("technicien", technicien);
+			request.getSession().setAttribute("userType", "technicien");
+			response.sendRedirect("technicien/dashboard.jsp");
+			
+		} else if (employe != null && PasswordHashUtil.verifyPassword(motDePasse, employe.getMotDePasse())) {
+			
+			request.getSession().setAttribute("employe", employe);
+			request.getSession().setAttribute("userType", "employe");
+			response.sendRedirect("employe/dashboard.jsp");
+			
+		} else {
+			
+			request.setAttribute("error", "Email ou mot de passe incorrect");
+			request.getRequestDispatcher(request.getContextPath() + "/views/Auth/Connexion.jsp")
+				.forward(request, response);
+			
+		}
+	}
+	
+//	System.out.println(citoyenDao.countCitoyen());
+//	System.out.println("count empl : "+employeDAO.countEmploye());
+//	System.out.println(signalementDao.countSignalement());
+//	System.out.println(signalementDao.getResolutionRate());
+//	System.out.println(signalementDao.getRecentReports(5));
+
+	private void dataSendAdmin(Administrateur admin, HttpServletRequest request, HttpServletResponse response) {
+		
+		
+		
+		int totalUsers = citoyenDao.countCitoyen();
+        int totalReports = signalementDao.countSignalement();
+        int municipalStaff = employeDAO.countEmploye();
+        double resolutionRate = signalementDao.getResolutionRate(); 
+        List<Signalement> recentReports = signalementDao.getRecentReports(5); // les 5 derniers
+
+        Map<String, Integer> monthlyData = signalementDao.getMonthlyReportStats();
+        //Map<String, Integer> typeData = signalementDao.getReportTypeStats(); -- not clear enough
+        List<Region> regions = regionDao.getAll();
+        List<Employe> employes = employeDAO.getAll();
+        List<Citoyen> citoyens = citoyenDao.getAll();
+        List<Municipal> municipaux = municipalDao.getAll();
+        System.out.println("Municipaux récupérés : " + municipaux.size());
+        List<Signalement> signalements = signalementDao.getAll();
+        
+        request.getSession().setAttribute("totalUsers", totalUsers);
+        request.getSession().setAttribute("totalReports", totalReports);
+        request.getSession().setAttribute("municipalStaff", municipalStaff);
+
+        request.getSession().setAttribute("recentReports", recentReports);
+        request.getSession().setAttribute("resolutionRate", resolutionRate);
+        request.getSession().setAttribute("monthlyData", monthlyData);
+
+        request.getSession().setAttribute("signalements", signalements); 
+        request.getSession().setAttribute("citoyens", citoyens); 
+        request.getSession().setAttribute("employes", employes);    	
+        request.getSession().setAttribute("regions", regions);
+    	request.getSession().setAttribute("municipaux", municipaux);
+		request.getSession().setAttribute("admin", admin);
+		request.getSession().setAttribute("userType", "admin");
+		
+	}
+
+	private void dataSendCitoyen(Citoyen citoyen,HttpServletRequest request, HttpServletResponse response) {
+    	
+		
+		Long idCitoyen = citoyen.getIdCitoyen();
+
+		request.getSession().setAttribute("user", citoyen);
+		
+    	List<Signalement> signalementCitoyen = signalementDao.getByIdCitoyen(idCitoyen);        	        	
+    	List<Region> regions = regionDao.getAll();
+    	//I might not need the following line, but we'll see,leave it here for the moment 
+    	Region regionCitoyen = regionDao.getRegionByCitoyen(idCitoyen);
+    	List<Signalement> signalements = signalementDao.getByIdCitoyen(idCitoyen);
+    	
+    	int countNewSignalement = signalementDao.getCountNewSignalementByCitoyen(idCitoyen);
+    	int countProcessingSignalement = signalementDao.getCountProcessingSignalementByCitoyen(idCitoyen);
+    	int countFinishedSignalement = signalementDao.getCountFinishedSignalementByCitoyen(idCitoyen);
+    	int countTotalSignalement = countNewSignalement +countProcessingSignalement+countFinishedSignalement;
+    	
+    	
+		request.getSession().setAttribute("countNewSignalement", countNewSignalement);
+		request.getSession().setAttribute("countProcessingSignalement", countProcessingSignalement);		
+    	request.getSession().setAttribute("countFinishedSignalement", countFinishedSignalement);		
+    	request.getSession().setAttribute("countTotalSignalement", countTotalSignalement);		
+
+    	request.getSession().setAttribute("signalements", signalements);
+    	request.getSession().setAttribute("regions", regions);
+    	request.getSession().setAttribute("regionCitoyen", regionCitoyen);        	
+    	request.getSession().setAttribute("signalementCitoyen", signalementCitoyen);
+		request.getSession().setAttribute("userType", "citoyen");
+
 	}
 
 }

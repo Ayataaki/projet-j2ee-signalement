@@ -1,6 +1,10 @@
 package dao;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import metier.Citoyen;
 import metier.Region;
 
 public class RegionCRUDImpl implements IRegionCRUD {
@@ -19,7 +23,12 @@ public class RegionCRUDImpl implements IRegionCRUD {
             ps.setString(2, region.getCapitaleRegionale());
             ps.setFloat(3, region.getSuperficie());
             ps.setInt(4, region.getPopulation());
-            ps.setDate(5, new java.sql.Date(region.getDateCreation().getTime()));
+            
+            if (region.getDateCreation() == null) {
+                ps.setDate(5, new java.sql.Date(System.currentTimeMillis()));
+            } else {
+                ps.setDate(5, new java.sql.Date(region.getDateCreation().getTime()));
+            }
 
             ps.executeUpdate();
 
@@ -34,7 +43,7 @@ public class RegionCRUDImpl implements IRegionCRUD {
     }
 
     @Override
-    public void deleteRegion(int id) {
+    public void deleteRegion(Long id) {
         String sql = "DELETE FROM REGION WHERE ID_REGION = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
@@ -63,7 +72,7 @@ public class RegionCRUDImpl implements IRegionCRUD {
     }
 
     @Override
-    public Region getById(int id) {
+    public Region getById(Long id) {
         String sql = "SELECT * FROM REGION WHERE ID_REGION = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
@@ -84,4 +93,37 @@ public class RegionCRUDImpl implements IRegionCRUD {
         }
         return null;
     }
+
+	@Override
+	public List<Region> getAll() {
+		String sql = "SELECT * FROM REGION";
+        List<Region> list = new ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Region r = new Region();
+                r.setIdRegion(rs.getLong("ID_REGION"));
+                r.setNom(rs.getString("NOM"));
+                r.setCapitaleRegionale(rs.getString("CAPITALE_REGIONALE"));
+                r.setSuperficie(rs.getFloat("SUPERFICIE"));
+                r.setPopulation(rs.getInt("POPULATION"));
+                r.setDateCreation(rs.getDate("DATE_CREATION"));      
+                list.add(r);
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Erreur lors de la récupération des régions", ex);
+        }
+        return list;
+	}
+
+	@Override
+	public Region getRegionByCitoyen(Long idCitoyen) {
+		ICitoyenCRUD citoyenDao = new CitoyenCRUDImpl();
+		Citoyen citoyen = citoyenDao.getById(idCitoyen);
+		Region region = getById(citoyen.getIdRegion());
+		return region;
+	}
 }

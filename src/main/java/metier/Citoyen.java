@@ -23,7 +23,7 @@ public class Citoyen {
 	public Citoyen(){}
 	
 	public Citoyen(String nom, String prenom, String cin, String lieuNaissance, String telephone,
-			String email, String motDePasse, Date dateNaissance) {
+			String email, String motDePasse, Date dateNaissance,Long idRegion) {
 		super();
 		this.nom = nom;
 		this.prenom = prenom;
@@ -35,7 +35,39 @@ public class Citoyen {
 		this.nomUtilisateur = nom + "." + prenom;
 		this.emailAuth = cin + "@municipal.ma";
 		this.dateNaissance = dateNaissance;
-		this.dateCreation = new Date();;
+		this.dateCreation = new Date();
+		this.idRegion= idRegion;
+	}
+	
+	public Citoyen(Long idCitoyen,String nom, String prenom, String cin, String lieuNaissance, String telephone,
+			String email, String motDePasse, Date dateNaissance,Long idRegion) {
+		super();
+		this.idCitoyen = idCitoyen;
+		this.nom = nom;
+		this.prenom = prenom;
+		this.cin = cin;
+		this.lieuNaissance = lieuNaissance;
+		this.telephone = telephone;
+		this.email = email;
+		this.motDePasse = motDePasse;
+		this.nomUtilisateur = nom + "." + prenom;
+		this.emailAuth = cin + "@municipal.ma";
+		this.dateNaissance = dateNaissance;
+		this.dateCreation = new Date();
+		this.idRegion= idRegion;
+	}
+
+	public Citoyen( String nom, String prenom, String cin, String lieuNaissance, String telephone,
+			String email, Date dateNaissance,Long idRegion) {
+		super();
+		this.idRegion = idRegion;
+		this.nom = nom;
+		this.prenom = prenom;
+		this.cin = cin;
+		this.lieuNaissance = lieuNaissance;
+		this.telephone = telephone;
+		this.email = email;
+		this.dateNaissance = dateNaissance;
 	}
 
 	public Long getIdCitoyen() {

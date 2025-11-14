@@ -48,8 +48,8 @@ public class RegionCRUDTest {
 		regionCRUD.createRegion(r);
 		Long id = r.getIdRegion();
 
-		regionCRUD.deleteRegion(id.intValue());
-		Region deleted = regionCRUD.getById(id.intValue());
+		regionCRUD.deleteRegion(id.longValue());
+		Region deleted = regionCRUD.getById(id.longValue());
 
 		assertNull("La région doit être supprimée", deleted);
 	}
@@ -71,7 +71,7 @@ public class RegionCRUDTest {
 
 		regionCRUD.updateRegion(r);
 
-		Region updated = regionCRUD.getById(r.getIdRegion().intValue());
+		Region updated = regionCRUD.getById(r.getIdRegion().longValue());
 		assertEquals("Nom doit être mis à jour", "Rabat-Kénitra", updated.getNom());
 		assertEquals("Population doit être mise à jour", 2600000, updated.getPopulation());
 	}
@@ -87,7 +87,7 @@ public class RegionCRUDTest {
 
 		regionCRUD.createRegion(r);
 
-		Region found = regionCRUD.getById(r.getIdRegion().intValue());
+		Region found = regionCRUD.getById(r.getIdRegion().longValue());
 		assertNotNull("La région doit être trouvée", found);
 		assertEquals("Les noms doivent correspondre", r.getNom(), found.getNom());
 	}

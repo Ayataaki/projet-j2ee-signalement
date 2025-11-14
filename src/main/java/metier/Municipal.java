@@ -12,6 +12,20 @@ public class Municipal {
 
 	private Date dateCreation;
 
+	public Municipal() {}
+	
+	
+	
+	public Municipal(String nom, String typeMunicipal,Long idRegion) {
+		super();
+		this.nom = nom;
+		this.typeMunicipal = typeMunicipal;
+		this.idRegion = idRegion;
+	}
+
+
+
+
 	public Long getIdMunicipal() {
 		return idMunicipal;
 	}

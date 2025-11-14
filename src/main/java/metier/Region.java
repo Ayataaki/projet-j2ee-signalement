@@ -14,6 +14,27 @@ public class Region {
 		capitaleRegionale;
 
 	private Date dateCreation;
+	
+	
+
+	@Override
+	public String toString() {
+		return "Region [idRegion=" + idRegion + ", superficie=" + superficie + ", population=" + population + ", nom="
+				+ nom + ", capitaleRegionale=" + capitaleRegionale + ", dateCreation=" + dateCreation + "]";
+	}
+
+	public Region(float superficie, int population, String nom, String capitaleRegionale) {
+		super();
+		this.superficie = superficie;
+		this.population = population;
+		this.nom = nom;
+		this.capitaleRegionale = capitaleRegionale;
+		this.dateCreation = new Date();
+	}
+
+	public Region() {
+		super();
+	}
 
 	public Long getIdRegion() {
 		return idRegion;

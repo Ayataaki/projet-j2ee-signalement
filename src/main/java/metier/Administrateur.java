@@ -35,6 +35,9 @@ public class Administrateur {
 	}
 
 
+	public Administrateur() {	}
+
+
 	public Long getIdAdmin() {
 		return idAdmin;
 	}

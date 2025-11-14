@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
+import metier.Citoyen;
 import metier.Employe;
 import utils.PasswordHashUtil;
 
@@ -39,7 +42,14 @@ public class EmployeCRUDImpl implements IEmployeCRUD{
 			String hashedPassword = PasswordHashUtil.hashPassword(employe.getMotDePasse());
             ps.setString(9, hashedPassword);
 			ps.setDate(10, new java.sql.Date(employe.getDateNaissance().getTime()));
-			ps.setDate(11, new java.sql.Date(employe.getDateCreation().getTime()));
+			//ps.setDate(11, new java.sql.Date(employe.getDateCreation().getTime()));
+			
+			if (employe.getDateCreation() == null) {
+                ps.setDate(11, new java.sql.Date(System.currentTimeMillis()));
+            } else {
+                ps.setDate(11, new java.sql.Date(employe.getDateCreation().getTime()));
+            }
+			
 			if (employe.getIdMunicipal() != null) {
 				ps.setLong(12, employe.getIdMunicipal());
 			} else {
@@ -188,6 +198,56 @@ public class EmployeCRUDImpl implements IEmployeCRUD{
 			throw new RuntimeException("Erreur lors de la récupération de l'employé", ex);
 		}
 		return null;
+	}
+
+
+	@Override
+	public int countEmploye() {
+		String sql = "SELECT COUNT(*) FROM EMPLOYE";
+		try (PreparedStatement ps = connection.prepareStatement(sql)) {
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next())
+					return rs.getInt(1);
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Erreur lors du calcul de total des employés", ex);
+		}
+		return 0;
+	}
+
+
+	@Override
+	public List<Employe> getAll() {
+		String sql = "SELECT * FROM EMPLOYE";
+        List<Employe> list = new ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Employe e = new Employe();
+                e.setIdEmploye(rs.getLong("ID_EMPLOYE"));
+				e.setNom(rs.getString("NOM"));
+				e.setPrenom(rs.getString("PRENOM"));
+				e.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
+				e.setAdminPriv(rs.getBoolean("ADMIN_PRIVILEGE"));
+				e.setEmailAuth(rs.getString("EMAIL_AUTH"));
+				e.setMotDePasse(rs.getString("MOT_DE_PASSE"));
+				e.setCin(rs.getString("CIN"));
+				e.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
+				e.setTelephone(rs.getString("TELEPHONE"));
+				e.setEmail(rs.getString("EMAIL"));
+				e.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
+				e.setDateCreation(rs.getDate("DATE_CREATION"));
+				e.setIdMunicipal(rs.getLong("ID_MUNICIPAL"));
+                list.add(e);
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Erreur lors de la récupération des employés", ex);
+        }
+        return list;
 	}
 
 }

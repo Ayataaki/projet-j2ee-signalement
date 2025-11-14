@@ -1,7 +1,11 @@
 package dao;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import metier.Municipal;
+import metier.Region;
 
 public class MunicipalCRUDImpl implements IMunicipalCRUD {
 
@@ -22,7 +26,14 @@ public class MunicipalCRUDImpl implements IMunicipalCRUD {
             } else {
                 ps.setNull(3, Types.BIGINT);
             }
-            ps.setDate(4, new java.sql.Date(municipal.getDateCreation().getTime()));
+            
+            //ps.setDate(4, new java.sql.Date(municipal.getDateCreation().getTime()));
+            
+            if (municipal.getDateCreation() == null) {
+                ps.setDate(4, new java.sql.Date(System.currentTimeMillis()));
+            } else {
+                ps.setDate(4, new java.sql.Date(municipal.getDateCreation().getTime()));
+            }
 
             ps.executeUpdate();
 
@@ -91,4 +102,27 @@ public class MunicipalCRUDImpl implements IMunicipalCRUD {
             throw new RuntimeException("Erreur lors de la suppression de la municipalité", ex);
         }
     }
+
+	@Override
+	public List<Municipal> getAll() {
+		String sql = "SELECT * FROM MUNICIPAL";
+        List<Municipal> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Municipal m = new Municipal();
+                    m.setIdMunicipal(rs.getLong("ID_MUNICIPAL"));
+                    m.setNom(rs.getString("NOM"));
+                    m.setTypeMunicipal(rs.getString("TYPE_MUNICIPAL"));
+                    long idRegion = rs.getLong("ID_REGION");
+                    m.setIdRegion(rs.wasNull() ? null : idRegion);
+                    m.setDateCreation(rs.getDate("DATE_CREATION"));
+                    list.add(m);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("Erreur lors de la récupération de la municipalité", ex);
+        }
+        return list;
+	}
 }

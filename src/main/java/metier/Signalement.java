@@ -10,11 +10,30 @@ public class Signalement {
 	private String description,
 		localisation,
 		imagePath,
-		commentaire;
+		commentaire,
+		designation;
 
 	private Statut statut;
 	
 	private Date dateCreation;
+
+	
+	
+	public Signalement(Long idCitoyen, Statut statut,String designation, String description, String localisation, 
+			String commentaire, String imagePath) {
+		super();
+		this.idCitoyen = idCitoyen;
+		this.description = description;
+		this.localisation = localisation;
+		this.imagePath = imagePath;
+		this.commentaire = commentaire;
+		this.designation = designation;
+		this.statut = statut;
+	}
+
+	public Signalement() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public Long getIdSignalement() {
 		return idSignalement;
@@ -78,6 +97,14 @@ public class Signalement {
 
 	public void setDateCreation(Date dateCreation) {
 		this.dateCreation = dateCreation;
+	}
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
 	}
 
 	

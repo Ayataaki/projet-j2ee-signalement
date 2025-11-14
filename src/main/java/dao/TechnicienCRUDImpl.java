@@ -35,8 +35,15 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
             ps.setString(8, t.getSpecialite());
             ps.setString(9, t.getCompetence());
             ps.setBoolean(10, t.getDisponibilite() != null ? t.getDisponibilite() : true);
-            ps.setDate(11, new java.sql.Date(t.getDateCreation().getTime()));
+            //ps.setDate(11, new java.sql.Date(t.getDateCreation().getTime()));
 
+            
+            if (t.getDateCreation() == null) {
+                ps.setDate(11, new java.sql.Date(System.currentTimeMillis()));
+            } else {
+                ps.setDate(11, new java.sql.Date(t.getDateCreation().getTime()));
+            }
+            
 			t.setNomUtilisateur(t.getNom() + "." + t.getPrenom());
 			ps.setString(12, t.getNomUtilisateur());
 			t.setEmailAuth(t.getCin() + "@service-municipal.ma");
