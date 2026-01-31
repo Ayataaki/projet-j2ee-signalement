@@ -18,10 +18,21 @@ public class CitoyenCRUDTest {
 
 	@Before
 	public void setUp() throws Exception {
-		crud = new CitoyenCRUDImpl();
 
 	    Connection conn = SingletonConnection.getConnection();
 	    //conn.createStatement().executeUpdate("DELETE FROM CITOYEN");
+
+
+        Flyway flyway = Flyway.configure()
+                .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
+                .locations("classpath:db/migration") // chemin de tes scripts SQL
+                .load();
+
+        // flyway.clean();   // optionnel : supprime la base avant chaque test
+        flyway.migrate(); // applique tous les scripts
+
+        
+		crud = new CitoyenCRUDImpl();
 	}
 	
 	private Citoyen createTestCitoyen(String nom, String prenom, String cin, String email) {

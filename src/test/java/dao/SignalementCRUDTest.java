@@ -16,6 +16,18 @@ public class SignalementCRUDTest {
 
 	@Before
 	public void setUp() throws Exception {
+
+				
+	    Connection conn = SingletonConnection.getConnection();
+
+		Flyway flyway = Flyway.configure()
+                .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
+                .locations("classpath:db/migration") // chemin de tes scripts SQL
+                .load();
+
+        // flyway.clean();   // optionnel : supprime la base avant chaque test
+        flyway.migrate(); // applique tous les scripts
+
 		signalementDAO = new SignalementCRUDImpl();
 	}
 	

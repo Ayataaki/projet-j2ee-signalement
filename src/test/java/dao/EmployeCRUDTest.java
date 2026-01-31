@@ -17,10 +17,20 @@ public class EmployeCRUDTest {
 
 	@Before
 	public void setUp() throws Exception {
-		employeDAO = new EmployeCRUDImpl();
+
 
 	    Connection conn = SingletonConnection.getConnection();
 	    // conn.createStatement().executeUpdate("DELETE FROM EMPLOYE");
+
+        Flyway flyway = Flyway.configure()
+                .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
+                .locations("classpath:db/migration") // chemin de tes scripts SQL
+                .load();
+
+        // flyway.clean();   // optionnel : supprime la base avant chaque test
+        flyway.migrate(); // applique tous les scripts
+
+		employeDAO = new EmployeCRUDImpl();
 	}
 	
 	
