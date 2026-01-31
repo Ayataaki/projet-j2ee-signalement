@@ -14,8 +14,17 @@ pipeline {
         }
         stage('Compiler le projet') {
             steps {
-                // Compilation avec Maven
-                bat 'mvn clean package'
+                bat 'mvn clean'
+            }
+        }
+        stage('Tester le projet') {
+            steps {
+                bat 'mvn test'
+            }
+        }
+        stage('Packager le projet') {
+            steps {
+                bat 'mvn package'
             }
         }
     }
