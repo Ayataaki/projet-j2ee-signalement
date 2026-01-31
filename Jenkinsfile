@@ -45,7 +45,7 @@ pipeline {
         
         stage('Analyse SonarQube') {
             steps {
-                withSonarQubeEnv('SonarQubeScanner') {
+                withSonarQubeEnv('MySonarServer') {
                     withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                         bat '''
                             mvn sonar:sonar ^
