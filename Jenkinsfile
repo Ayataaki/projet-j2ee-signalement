@@ -22,18 +22,34 @@ pipeline {
                 bat 'mvn test'
             }
         }
-        stage('Packager le projet') {
+        // stage('Packager le projet') {
+        //     steps {
+        //         bat 'mvn package'
+        //     }
+        // }
+        // stage('Analyse SonarQube') {
+        //     environment {
+        //         SONAR_TOKEN = credentials('squ_1cab12067fa4e40ed973a93f17379f3ea39b14ca') // le token que tu as ajouté dans Jenkins
+        //     }
+        //     steps {
+        //         withSonarQubeEnv('SonarQube') {
+        //             bat "mvn sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
+        //         }
+        //     }
+        // }
+         stage('Packager le projet') {
             steps {
-                bat 'mvn package'
+                bat 'mvn package -DskipTests'
             }
         }
+        
         stage('Analyse SonarQube') {
-            environment {
-                SONAR_TOKEN = credentials('squ_1cab12067fa4e40ed973a93f17379f3ea39b14ca') // le token que tu as ajouté dans Jenkins
-            }
             steps {
+                // ✅ CORRIGER ICI
                 withSonarQubeEnv('SonarQube') {
-                    bat "mvn sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
+                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                        bat "mvn sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
+                    }
                 }
             }
         }
