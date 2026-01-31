@@ -48,7 +48,7 @@ public class AdminCRUDTest {
         TestDatabaseConfig.cleanDatabase();
 
         // 3️⃣ Initialiser le 
-        DAOadminDAO = new AdminCRUDImpl();
+        adminDAO = new AdminCRUDImpl();
     }
 
 	private Administrateur createTestAdmin(String nom, String prenom, String cin, String email) {
