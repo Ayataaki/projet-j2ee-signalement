@@ -27,5 +27,15 @@ pipeline {
                 bat 'mvn package'
             }
         }
+        stage('Analyse SonarQube') {
+            environment {
+                SONAR_TOKEN = credentials('squ_1cab12067fa4e40ed973a93f17379f3ea39b14ca') // le token que tu as ajouté dans Jenkins
+            }
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat "mvn sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
+                }
+            }
+        }
     }
 }
