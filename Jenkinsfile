@@ -45,10 +45,12 @@ pipeline {
         
         stage('Analyse SonarQube') {
             steps {
-                // ✅ CORRIGER ICI
                 withSonarQubeEnv('SonarQubeScanner') {
                     withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                        bat "mvn sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
+                        bat '''
+                            mvn sonar:sonar ^
+                            -Dsonar.projectKey=plateforme-signalement-urbain
+                        '''
                     }
                 }
             }
