@@ -80,15 +80,15 @@ public class SingletonConnection {
         try {
             System.out.println("Migration Flyway en cours...");
 
-            String migrationsPath;
-            if (url.startsWith("jdbc:h2:")) {
-                migrationsPath = "classpath:db/migration"; // tests
-            } else {
-                migrationsPath = "classpath:db/migration_mysql"; // MySQL
-            }
+            // String migrationsPath;
+            // if (url.startsWith("jdbc:h2:")) {
+            //     migrationsPath = "classpath:db/migration"; // tests
+            // } else {
+            //     migrationsPath = "classpath:db/migration_mysql"; // MySQL
+            // }
 
             Flyway flyway = Flyway.configure()
-            .locations(migrationsPath)
+            // .locations(migrationsPath)
             .dataSource(url, user, password)
             .cleanDisabled(false)  // autorisé en test, mais désactiver pour prod si nécessaire
             .outOfOrder(true)      // migrations hors ordre autorisées
