@@ -11,6 +11,11 @@ import org.junit.Test;
 import metier.Citoyen;
 import metier.Employe;
 
+import org.flywaydb.core.Flyway;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+
 public class EmployeCRUDTest {
 	
 	private EmployeCRUDImpl employeDAO;

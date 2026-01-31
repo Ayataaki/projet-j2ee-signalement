@@ -9,6 +9,11 @@ import org.junit.Test;
 
 import metier.Region;
 
+import org.flywaydb.core.Flyway;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+
 public class RegionCRUDTest {
 
 	private RegionCRUDImpl regionCRUD;

@@ -10,6 +10,11 @@ import org.junit.Test;
 import metier.Signalement;
 import metier.Statut;
 
+import org.flywaydb.core.Flyway;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+
 public class SignalementCRUDTest {
 
 	private SignalementCRUDImpl signalementDAO;

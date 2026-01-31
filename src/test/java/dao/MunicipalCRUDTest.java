@@ -9,6 +9,11 @@ import org.junit.Test;
 
 import metier.Municipal;
 
+import org.flywaydb.core.Flyway;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+
 public class MunicipalCRUDTest {
 
     private MunicipalCRUDImpl municipalDAO;

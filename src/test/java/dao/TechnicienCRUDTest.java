@@ -5,6 +5,11 @@ import static org.junit.Assert.*;
 import java.sql.Connection;
 import java.sql.Date;
 
+import org.flywaydb.core.Flyway;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,9 +27,7 @@ public class TechnicienCRUDTest {
         Connection conn = SingletonConnection.getConnection();
 	    // conn.createStatement().executeUpdate("DELETE FROM TECHNICIEN");
 
-        		
-	    Connection conn = SingletonConnection.getConnection();
-
+        	
 		Flyway flyway = Flyway.configure()
                 .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
                 .locations("classpath:db/migration") // chemin de tes scripts SQL
