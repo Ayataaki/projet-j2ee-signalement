@@ -46,7 +46,7 @@ pipeline {
         stage('Analyse SonarQube') {
             steps {
                 // ✅ CORRIGER ICI
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('SonarQubeScanner') {
                     withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                         bat "mvn sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
                     }

@@ -19,6 +19,14 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <failOnMissingWebXml>false</failOnMissingWebXml>
+
+        <!-- SonarQube -->
+        <sonar.projectKey>plateforme-signalement-urbain</sonar.projectKey>
+        <sonar.projectName>Plateforme Signalement Urbain</sonar.projectName>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.java.source>17</sonar.java.source>
+        <sonar.java.target>17</sonar.java.target>
+        
     </properties>
 
     <dependencies>
