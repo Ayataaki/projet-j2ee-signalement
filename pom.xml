@@ -79,11 +79,11 @@
         </dependency>
 
         <!-- I added this section to use h2 instead of mysql while testing, but I solved the prob and no need for that -->
-        <!-- <dependency>
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
-        </dependency> -->
+        </dependency>
 
 
     </dependencies>
