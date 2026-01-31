@@ -25,7 +25,7 @@ public class TechnicienCRUDTest {
     public void setUp() throws Exception {
 
         Connection conn = SingletonConnection.getConnection();
-	    // conn.createStatement().executeUpdate("DELETE FROM TECHNICIEN");
+	     conn.createStatement().executeUpdate("DELETE FROM TECHNICIEN");
 
         	
 		Flyway flyway = Flyway.configure()

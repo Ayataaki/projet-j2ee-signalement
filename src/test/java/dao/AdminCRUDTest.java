@@ -22,7 +22,7 @@ public class AdminCRUDTest {
 	public void setUp() throws Exception {
 
 	    Connection conn = SingletonConnection.getConnection();
-	    //conn.createStatement().executeUpdate("DELETE FROM ADMINISTRATEUR");
+	    conn.createStatement().executeUpdate("DELETE FROM ADMINISTRATEUR");
 
         Flyway flyway = Flyway.configure()
                 .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")

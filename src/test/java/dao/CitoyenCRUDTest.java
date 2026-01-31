@@ -25,7 +25,7 @@ public class CitoyenCRUDTest {
 	public void setUp() throws Exception {
 
 	    Connection conn = SingletonConnection.getConnection();
-	    //conn.createStatement().executeUpdate("DELETE FROM CITOYEN");
+	    conn.createStatement().executeUpdate("DELETE FROM CITOYEN");
 
 
         Flyway flyway = Flyway.configure()
