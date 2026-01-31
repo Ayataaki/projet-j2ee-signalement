@@ -16,28 +16,44 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 
+import utils.TestDatabaseConfig;
+
+
 public class EmployeCRUDTest {
 	
 	private EmployeCRUDImpl employeDAO;
 
-	@Before
-	public void setUp() throws Exception {
+	// @Before
+	// public void setUp() throws Exception {
 
 
-	    Connection conn = SingletonConnection.getConnection();
-	     conn.createStatement().executeUpdate("DELETE FROM EMPLOYE");
+	//     Connection conn = SingletonConnection.getConnection();
+	//      conn.createStatement().executeUpdate("DELETE FROM EMPLOYE");
 
-        Flyway flyway = Flyway.configure()
-                .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
-                .locations("classpath:db/migration") // chemin de tes scripts SQL
-                .load();
+    //     Flyway flyway = Flyway.configure()
+    //             .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
+    //             .locations("classpath:db/migration") // chemin de tes scripts SQL
+    //             .load();
 
-        // flyway.clean();   // optionnel : supprime la base avant chaque test
-        flyway.migrate(); // applique tous les scripts
+    //     // flyway.clean();   // optionnel : supprime la base avant chaque test
+    //     flyway.migrate(); // applique tous les scripts
 
-		employeDAO = new EmployeCRUDImpl();
-	}
+	// 	employeDAO = new EmployeCRUDImpl();
+	// }
 	
+        @Before
+    public void setUp() throws Exception {
+
+        // 1️⃣ S'assurer que le schéma existe
+        TestDatabaseConfig.migrate();
+
+        // 2️⃣ Nettoyer les données
+        TestDatabaseConfig.cleanDatabase();
+
+        // 3️⃣ Initialiser le 
+        employeDAO = new EmployeCRUDImpl();
+    }
+
 	
 	private Employe createTestEmploye(String nom, String prenom, String cin, String email) {
 		Employe c = new Employe();

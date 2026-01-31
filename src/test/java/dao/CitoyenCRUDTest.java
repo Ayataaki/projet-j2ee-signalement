@@ -16,29 +16,45 @@ import org.flywaydb.core.Flyway;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import utils.TestDatabaseConfig;
+
 
 public class CitoyenCRUDTest {
 	
 	private CitoyenCRUDImpl crud = new CitoyenCRUDImpl();
 
-	@Before
-	public void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
-	    Connection conn = SingletonConnection.getConnection();
-	    conn.createStatement().executeUpdate("DELETE FROM CITOYEN");
+        // 1️⃣ S'assurer que le schéma existe
+        TestDatabaseConfig.migrate();
 
+        // 2️⃣ Nettoyer les données
+        TestDatabaseConfig.cleanDatabase();
 
-        Flyway flyway = Flyway.configure()
-                .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
-                .locations("classpath:db/migration") // chemin de tes scripts SQL
-                .load();
-
-        // flyway.clean();   // optionnel : supprime la base avant chaque test
-        flyway.migrate(); // applique tous les scripts
-
+        // 3️⃣ Initialiser le 
         
 		crud = new CitoyenCRUDImpl();
-	}
+    }
+
+
+
+	// @Before
+	// public void setUp() throws Exception {
+
+	//     Connection conn = SingletonConnection.getConnection();
+	//     conn.createStatement().executeUpdate("DELETE FROM CITOYEN");
+
+
+    //     Flyway flyway = Flyway.configure()
+    //             .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
+    //             .locations("classpath:db/migration") // chemin de tes scripts SQL
+    //             .load();
+
+    //     // flyway.clean();   // optionnel : supprime la base avant chaque test
+    //     flyway.migrate(); // applique tous les scripts
+
+	// }
 	
 	private Citoyen createTestCitoyen(String nom, String prenom, String cin, String email) {
         Citoyen c = new Citoyen();

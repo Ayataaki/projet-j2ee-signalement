@@ -13,28 +13,43 @@ import org.flywaydb.core.Flyway;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import utils.TestDatabaseConfig;
+
 
 public class AdminCRUDTest {
 	
 	private AdminCRUDImpl adminDAO;
 
-	@Before
-	public void setUp() throws Exception {
+	// @Before
+	// public void setUp() throws Exception {
 
-	    Connection conn = SingletonConnection.getConnection();
-	    conn.createStatement().executeUpdate("DELETE FROM ADMINISTRATEUR");
+	//     Connection conn = SingletonConnection.getConnection();
+	//     conn.createStatement().executeUpdate("DELETE FROM ADMINISTRATEUR");
 
-        Flyway flyway = Flyway.configure()
-                .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
-                .locations("classpath:db/migration") // chemin de tes scripts SQL
-                .load();
+    //     Flyway flyway = Flyway.configure()
+    //             .dataSource("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "")
+    //             .locations("classpath:db/migration") // chemin de tes scripts SQL
+    //             .load();
 
-        // flyway.clean();   // optionnel : supprime la base avant chaque test
-        flyway.migrate(); // applique tous les scripts
+    //     // flyway.clean();   // optionnel : supprime la base avant chaque test
+    //     flyway.migrate(); // applique tous les scripts
 
-		adminDAO = new AdminCRUDImpl();
+	// 	
 
-	}
+	// }
+
+    @Before
+    public void setUp() throws Exception {
+
+        // 1️⃣ S'assurer que le schéma existe
+        TestDatabaseConfig.migrate();
+
+        // 2️⃣ Nettoyer les données
+        TestDatabaseConfig.cleanDatabase();
+
+        // 3️⃣ Initialiser le 
+        DAOadminDAO = new AdminCRUDImpl();
+    }
 
 	private Administrateur createTestAdmin(String nom, String prenom, String cin, String email) {
 		Administrateur c = new Administrateur();
