@@ -15,7 +15,7 @@ pipeline {
         stage('Compiler le projet') {
             steps {
                 // Compilation avec Maven
-                sh 'mvn clean package'
+                bat 'mvn clean package'
             }
         }
     }
