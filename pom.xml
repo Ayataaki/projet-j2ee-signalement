@@ -82,8 +82,10 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <version>2.2.224</version> <!-- par exemple, dernière version stable -->
             <scope>test</scope>
         </dependency>
+
 
 
     </dependencies>
