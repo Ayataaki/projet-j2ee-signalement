@@ -79,14 +79,32 @@ public class SingletonConnection {
     private static void migrateDatabase(String url, String user, String password) {
         try {
             System.out.println("Migration Flyway en cours...");
+
+            String migrationsPath;
+            if (url.startsWith("jdbc:h2:")) {
+                migrationsPath = "classpath:db/migration"; // tests
+            } else {
+                migrationsPath = "classpath:db/migration_mysql"; // MySQL
+            }
+
             Flyway flyway = Flyway.configure()
-                .dataSource(url, user, password)
-                .cleanDisabled(false)
-                .outOfOrder(true)  
-                .load();
-            
+            .locations(migrationsPath)
+            .dataSource(url, user, password)
+            .cleanDisabled(false)  // autorisé en test, mais désactiver pour prod si nécessaire
+            .outOfOrder(true)      // migrations hors ordre autorisées
+            .load();
+
             flyway.repair();
             flyway.migrate();
+
+            // Flyway flyway = Flyway.configure()
+            //     .dataSource(url, user, password)
+            //     .cleanDisabled(false)
+            //     .outOfOrder(true)  
+            //     .load();
+            
+            // flyway.repair();
+            // flyway.migrate();
             
             System.out.println("Migration réussie !");
         } catch (Exception e) {
