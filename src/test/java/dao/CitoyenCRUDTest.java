@@ -21,7 +21,7 @@ public class CitoyenCRUDTest {
 		crud = new CitoyenCRUDImpl();
 
 	    Connection conn = SingletonConnection.getConnection();
-	    conn.createStatement().executeUpdate("DELETE FROM CITOYEN");
+	    //conn.createStatement().executeUpdate("DELETE FROM CITOYEN");
 	}
 	
 	private Citoyen createTestCitoyen(String nom, String prenom, String cin, String email) {

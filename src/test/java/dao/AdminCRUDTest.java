@@ -18,7 +18,7 @@ public class AdminCRUDTest {
 		adminDAO = new AdminCRUDImpl();
 
 	    Connection conn = SingletonConnection.getConnection();
-	    conn.createStatement().executeUpdate("DELETE FROM ADMINISTRATEUR");
+	    //conn.createStatement().executeUpdate("DELETE FROM ADMINISTRATEUR");
 	}
 
 	private Administrateur createTestAdmin(String nom, String prenom, String cin, String email) {

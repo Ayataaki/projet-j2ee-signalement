@@ -20,7 +20,7 @@ public class TechnicienCRUDTest {
     public void setUp() throws Exception {
         technicienDAO = new TechnicienCRUDImpl();
         Connection conn = SingletonConnection.getConnection();
-	    conn.createStatement().executeUpdate("DELETE FROM TECHNICIEN");
+	    // conn.createStatement().executeUpdate("DELETE FROM TECHNICIEN");
     }
     
     private Technicien createTestTechnicien(String nom, String prenom, String cin, String email) {

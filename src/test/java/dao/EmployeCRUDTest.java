@@ -20,7 +20,7 @@ public class EmployeCRUDTest {
 		employeDAO = new EmployeCRUDImpl();
 
 	    Connection conn = SingletonConnection.getConnection();
-	    conn.createStatement().executeUpdate("DELETE FROM EMPLOYE");
+	    // conn.createStatement().executeUpdate("DELETE FROM EMPLOYE");
 	}
 	
 	
