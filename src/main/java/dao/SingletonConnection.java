@@ -10,65 +10,92 @@ public class SingletonConnection {
 	
 	private static Connection connection;
     
-	
-	//On met la connection dans un bloc static. 
-	//En effet, ceci garantit d'avoir une seule connection, lors de chargement de la classe
-    static {
-    try {   	
+	static {
+        try {   	
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Récupérer la configuration depuis les variables d'environnement ou db.properties
+            String url = getConfigValue("db.url", "DB_HOST", "DB_PORT", "DB_NAME");
+            String user = getConfigValue("db.user", "DB_USER");
+            String password = getConfigValue("db.password", "DB_PASSWORD");
+            
+            System.out.println("Tentative de connexion à : " + url);
+            System.out.println("Utilisateur : " + user);
+            
+            // Migrer la BDD
+            migrateDatabase(url, user, password);
 
-        // Charge le driver JDBC MySQL pour établir la connexion
-    	// Ce driver doit etre charger avant le travail avec flyway
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        
-        // Crée un objet Properties pour lire les paramètres de configuration
-        Properties props = new Properties();
+            // Créer la connexion
+            connection = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connexion établie avec succès !");
 
-        // Charge le fichier db.properties depuis le classpath (webapp/WEB-INF/config)
-        InputStream in = SingletonConnection.class.getClassLoader().
-                            getResourceAsStream("db.properties");
-        
-        // Remplit l'objet Properties avec les valeurs du fichier
-        props.load(in);
-
-        // Récupère les paramètres de connexion depuis le fichier
-        String url = props.getProperty("db.url");       
-        String user = props.getProperty("db.user");     
-        String password = props.getProperty("db.password"); 
-        
-        // Migré la BDD
-        migrateDatabase(url,user,password);
-
-
-        // Crée la connexion à la base de données avec les paramètres récupérés
-        connection = DriverManager.getConnection(url, user, password);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        throw new RuntimeException("Erreur de connexion à la base de données", e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erreur de connexion à la base de données", e);
+        }
     }
-}
     
-    private static void migrateDatabase(String URL,String USER,String PASSWORD) {
+    /**
+     * Récupère une valeur de configuration depuis les variables d'environnement
+     * ou depuis db.properties en fallback
+     */
+    private static String getConfigValue(String propertyKey, String... envKeys) {
+        // 1. Essayer les variables d'environnement (pour Docker)
+        if (envKeys.length == 3) {
+            // Cas de l'URL construite depuis DB_HOST, DB_PORT, DB_NAME
+            String host = System.getenv(envKeys[0]);
+            String port = System.getenv(envKeys[1]);
+            String dbName = System.getenv(envKeys[2]);
+            
+            if (host != null && port != null && dbName != null) {
+                return String.format("jdbc:mysql://%s:%s/%s?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false", 
+                                     host, port, dbName);
+            }
+        } else if (envKeys.length == 1) {
+            // Cas simple (user, password)
+            String envValue = System.getenv(envKeys[0]);
+            if (envValue != null) {
+                return envValue;
+            }
+        }
+        
+        // 2. Fallback sur db.properties
         try {
-            System.out.println("Migration Flyway en cours");
+            Properties props = new Properties();
+            InputStream in = SingletonConnection.class.getClassLoader()
+                                .getResourceAsStream("db.properties");
+            if (in != null) {
+                props.load(in);
+                return props.getProperty(propertyKey);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        throw new RuntimeException("Configuration introuvable pour : " + propertyKey);
+    }
+    
+    private static void migrateDatabase(String url, String user, String password) {
+        try {
+            System.out.println("Migration Flyway en cours...");
             Flyway flyway = Flyway.configure()
-                .dataSource(URL, USER, PASSWORD)
+                .dataSource(url, user, password)
                 .cleanDisabled(false)
                 .outOfOrder(true)  
                 .load();
             
             flyway.repair();
-            //flyway.clean();
             flyway.migrate();
             
-            System.out.println("Migration réussie");
+            System.out.println("Migration réussie !");
         } catch (Exception e) {
-            throw new RuntimeException("Erreur de connexion à la base de données", e);
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de la migration Flyway", e);
         }
     }
     
 	public static Connection getConnection() {
 		return connection;
 	}
-    
 }

@@ -5,17 +5,30 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: website_signalement
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin123
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       timeout: 20s
       retries: 10
+
+  tomcat:
+    build: .
+    container_name: tomcat-j2ee
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8081:8080"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: website_signalement
+      DB_USER: root
+      DB_PASSWORD: root
 
 volumes:
   mysql-data:
