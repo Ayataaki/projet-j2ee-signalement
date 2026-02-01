@@ -7,7 +7,14 @@ import java.util.List;
 import metier.Municipal;
 import metier.Region;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MunicipalCRUDImpl implements IMunicipalCRUD {
+
+    
+    private static final Logger logger =
+            LoggerFactory.getLogger(MunicipalCRUDImpl.class);
 
     private Connection connection;
 
@@ -44,7 +51,8 @@ public class MunicipalCRUDImpl implements IMunicipalCRUD {
             }
 
         } catch (SQLException ex) {
-            throw new RuntimeException("Erreur lors de la création de la municipalité", ex);
+            logger.error("Erreur création municipalité NOM={}", municipal.getNom(), ex);
+            throw new RuntimeException("Erreur technique lors de la création de la municipalité");
         }
     }
 
@@ -99,7 +107,8 @@ public class MunicipalCRUDImpl implements IMunicipalCRUD {
             ps.setLong(1, id);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            throw new RuntimeException("Erreur lors de la suppression de la municipalité", ex);
+            logger.error("Erreur suppression municipalité ID={}", id, ex);
+            throw new RuntimeException("Erreur technique lors de la suppression de la municipalité");
         }
     }
 

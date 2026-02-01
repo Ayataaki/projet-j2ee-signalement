@@ -1,13 +1,12 @@
 pipeline {
     agent any
     tools {
-        jdk 'Java17'          // correspond au JDK configuré
-        maven 'Maven-3.9'     // correspond à Maven configuré
+        jdk 'Java17'     
+        maven 'Maven-3.9'    
     }
     stages {
         stage('Cloner le dépôt') {
             steps {
-                // Clonage avec Git
                 git branch: 'develop', 
                     url: 'https://github.com/Ayataaki/projet-j2ee-signalement.git'
             }
@@ -22,21 +21,6 @@ pipeline {
                 bat 'mvn test'
             }
         }
-        // stage('Packager le projet') {
-        //     steps {
-        //         bat 'mvn package'
-        //     }
-        // }
-        // stage('Analyse SonarQube') {
-        //     environment {
-        //         SONAR_TOKEN = credentials('squ_1cab12067fa4e40ed973a93f17379f3ea39b14ca') // le token que tu as ajouté dans Jenkins
-        //     }
-        //     steps {
-        //         withSonarQubeEnv('SonarQube') {
-        //             bat "mvn sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
-        //         }
-        //     }
-        // }
          stage('Packager le projet') {
             steps {
                 bat 'mvn package -DskipTests'
@@ -49,7 +33,8 @@ pipeline {
                     withCredentials([string(credentialsId: 'a52f7e79-5432-451e-8030-8b6f0df955ee', variable: 'SONAR_TOKEN')]) {
                         bat '''
                             mvn sonar:sonar ^
-                            -Dsonar.projectKey=plateforme-signalement-urbain
+                            -Dsonar.projectKey=plateforme-signalement-urbain \
+                            -Dsonar.branch.name=develop
                         '''
                     }
                 }

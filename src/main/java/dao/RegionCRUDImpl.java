@@ -7,7 +7,14 @@ import java.util.List;
 import metier.Citoyen;
 import metier.Region;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RegionCRUDImpl implements IRegionCRUD {
+
+    
+    private static final Logger logger =
+            LoggerFactory.getLogger(MunicipalCRUDImpl.class);
 
     private Connection connection;
 

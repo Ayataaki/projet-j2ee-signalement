@@ -9,7 +9,14 @@ import java.sql.Statement;
 import metier.Technicien;
 import utils.PasswordHashUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TechnicienCRUDImpl implements ITechnicienCRUD {
+
+	
+    private static final Logger logger =
+            LoggerFactory.getLogger(MunicipalCRUDImpl.class);
 
     private Connection connection;
 
@@ -60,8 +67,10 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
             }
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Erreur lors de la création du technicien", ex);
+
+			
+			logger.error("Erreur lors de la création du tech", ex);
+    		throw new RuntimeException("Erreur lors de la récupération du tech");
         }
     }
 
@@ -93,8 +102,9 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
                 
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Erreur lors de la récupération du technicien", ex);
+			logger.error("Erreur lors de la récupération du tech", ex);
+    		throw new RuntimeException("Erreur lors de la récupération du tech");
+			
         }
         return null;
     }
@@ -128,8 +138,11 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
 			ps.executeUpdate();
 			return t;
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Erreur lors de la mise à jour du technicien", ex);
+
+			
+			logger.error("Erreur lors de la mise à jour du tech", ex);
+    		throw new RuntimeException("Erreur lors de la MAJ du tech");
+
 		}
 	}
 
@@ -140,8 +153,9 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
 			ps.setLong(1, id);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-            throw new RuntimeException("Erreur lors de la suppression du technicien", ex);
+			
+			logger.error("Erreur lors de la supp du tech", ex);
+    		throw new RuntimeException("Erreur lors de la récupération du tech");
         }
     }
 
@@ -175,8 +189,9 @@ public class TechnicienCRUDImpl implements ITechnicienCRUD {
 
 			}
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Erreur lors de la récupération du technicien", ex);
+			
+			logger.error("Erreur lors de la récup du tech", ex);
+    		throw new RuntimeException("Erreur lors de la récupération du tech");
 		}
 		return null;
 	}

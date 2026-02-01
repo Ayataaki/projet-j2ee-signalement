@@ -11,9 +11,16 @@ import java.util.List;
 import metier.Administrateur;
 import utils.PasswordHashUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AdminCRUDImpl implements IAdminCRUD {
 
 	private Connection connection;
+
+    private static final Logger logger =
+        LoggerFactory.getLogger(AdminCRUDImpl.class);
+
 
 	public AdminCRUDImpl() {
 		this.connection = SingletonConnection.getConnection();
@@ -57,8 +64,10 @@ public class AdminCRUDImpl implements IAdminCRUD {
 			}
 
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Erreur lors de la création de l'admin", ex);
+
+			logger.error("Erreur lors de la création de l'admin ", ex);
+    		throw new RuntimeException("Erreur lors de la création de l'admin");
+
 		}
 
 		
@@ -72,8 +81,9 @@ public class AdminCRUDImpl implements IAdminCRUD {
             ps.setLong(1, id);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Erreur lors de la suppression de l'admin", ex);
+
+			logger.error("Erreur lors de la suppression de l'admin avec ID={}", id, ex);
+    		throw new RuntimeException("Erreur lors de la suppression de l'admin");
         }
 
 	}
@@ -105,8 +115,9 @@ public class AdminCRUDImpl implements IAdminCRUD {
          return admin;
 
      } catch (SQLException ex) {
-         ex.printStackTrace();
-         throw new RuntimeException("Erreur lors de la mise à jour de l'admin", ex);
+		
+			logger.error("Erreur lors de la modification de l'admin ",  ex);
+    		throw new RuntimeException("Erreur lors de la modification de l'admin");
      }
 		
 	}
@@ -136,8 +147,10 @@ public class AdminCRUDImpl implements IAdminCRUD {
 				}
 			}
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Erreur lors de la récupération de l'admin", ex);
+			
+			logger.error("Erreur lors de la récupération de l'admin", ex);
+    		throw new RuntimeException("Erreur lors de la récupération de l'admin");
+
 		}
 		return null;
 
@@ -167,9 +180,10 @@ public class AdminCRUDImpl implements IAdminCRUD {
             }
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Erreur lors de la récupération des administrateurs", ex);
-        }
+			
+			logger.error("Erreur lors de la récupération des admin", ex);
+    		throw new RuntimeException("Erreur lors de la récupération des admin");
+		}
         return list;
 	}
 
@@ -198,8 +212,10 @@ public class AdminCRUDImpl implements IAdminCRUD {
 				}
 			}
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Erreur lors de la récupération de l'admin", ex);
+			
+			logger.error("Erreur lors de la récupération de l'admin", ex);
+    		throw new RuntimeException("Erreur lors de la récupération de l'admin");
+			
 		}
 		return null;
 
