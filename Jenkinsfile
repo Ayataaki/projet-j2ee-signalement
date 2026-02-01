@@ -33,8 +33,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'a52f7e79-5432-451e-8030-8b6f0df955ee', variable: 'SONAR_TOKEN')]) {
                         bat '''
                             mvn sonar:sonar ^
-                            -Dsonar.projectKey=plateforme-signalement-urbain \
-                            -Dsonar.branch.name=develop
+                            -Dsonar.projectKey=plateforme-signalement-urbain 
                         '''
                     }
                 }
