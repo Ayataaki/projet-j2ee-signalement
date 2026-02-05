@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plateforme-j2ee
+  labels:
+    app: plateforme
+spec:
+  replicas: 1  # Commencer avec 1 seul pod pour debug
+  selector:
+    matchLabels:
+      app: plateforme
+  template:
+    metadata:
+      labels:
+        app: plateforme
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      initContainers:
+        # Attendre que MySQL soit vraiment prêt
+        - name: wait-for-mysql
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for MySQL to be ready..."
+              until nc -z mysql 3306; do
+                echo "MySQL not ready yet, waiting...";
+                sleep 3;
+              done;
+              echo "MySQL is ready! Waiting 10 more seconds for full initialization..."
+              sleep 10;
+              echo "Ready to start application!";
+      containers:
+        - name: plateforme
+          image: ayaah123/projet-j2ee-signalement:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: DB_HOST
+              value: "mysql"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "website_signalement"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              value: "root"
+            # Variables Java pour Tomcat
+            - name: CATALINA_OPTS
+              value: "-Xms256m -Xmx512m"
+            - name: JAVA_OPTS
+              value: "-Djava.security.egd=file:/dev/./urandom"
+          # PROBES SIMPLIFIÉES - Vérifie juste que Tomcat répond
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 180  # 3 minutes pour laisser Flyway migrer
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 150  # 2.5 minutes
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi

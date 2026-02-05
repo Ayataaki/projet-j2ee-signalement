@@ -18,6 +18,25 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 		this.connection = SingletonConnection.getConnection();
 	}
 
+	private Citoyen mapResultSetToCitoyen(ResultSet rs) throws SQLException {
+		Citoyen c = new Citoyen();
+		c.setIdCitoyen(rs.getLong("ID_CITOYEN"));
+		c.setNom(rs.getString("NOM"));
+		c.setPrenom(rs.getString("PRENOM"));
+		c.setCin(rs.getString("CIN"));
+		c.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
+		c.setTelephone(rs.getString("TELEPHONE"));
+		c.setEmail(rs.getString("EMAIL"));
+		c.setEmailAuth(rs.getString("EMAIL_AUTH"));
+		c.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
+		c.setMotDePasse(rs.getString("MOT_DE_PASSE"));
+		c.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
+		c.setDateCreation(rs.getDate("DATE_CREATION"));
+		c.setIdRegion(rs.getLong("ID_REGION"));
+		return c;
+	}
+
+
 	@Override
 	public void createCitoyen(Citoyen citoyen) {
 
@@ -92,21 +111,7 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 			ps.setLong(1, id);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
-					Citoyen c = new Citoyen();
-					c.setIdCitoyen(rs.getLong("ID_CITOYEN"));
-					c.setNom(rs.getString("NOM"));
-					c.setPrenom(rs.getString("PRENOM"));
-					c.setCin(rs.getString("CIN"));
-					c.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
-					c.setTelephone(rs.getString("TELEPHONE"));
-					c.setEmail(rs.getString("EMAIL"));
-					c.setEmailAuth(rs.getString("EMAIL_AUTH"));
-					c.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
-					c.setMotDePasse(rs.getString("MOT_DE_PASSE"));
-					c.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
-					c.setDateCreation(rs.getDate("DATE_CREATION"));
-					c.setIdRegion(rs.getLong("ID_REGION"));
-					return c;
+					return mapResultSetToCitoyen(rs);
 				}
 			}
 		} catch (SQLException ex) {
@@ -133,22 +138,16 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 			ps.setString(7, citoyen.getEmailAuth());
 			ps.setString(8, citoyen.getNomUtilisateur());
 			ps.setDate(9, new java.sql.Date(citoyen.getDateNaissance().getTime()));
-//			String hashedPassword = PasswordHashUtil.hashPassword(citoyen.getMotDePasse());
-//            ps.setString(10, hashedPassword);
 			
 			String motDePasse = citoyen.getMotDePasse();
 	        
-	        // Vérifier si le mot de passe est déjà haché (Base64 = 64 caractères pour notre algo)
 	        if (motDePasse != null && motDePasse.length() == 64) {
-	            // Déjà haché, utiliser tel quel
 	            ps.setString(10, motDePasse);
 	            System.out.println("⚠️ Mot de passe déjà haché, pas de re-hachage");
 	        } else if (motDePasse != null && !motDePasse.isEmpty()) {
-	            // Nouveau mot de passe en clair, le hacher
 	            String hashedPassword = PasswordHashUtil.hashPassword(motDePasse);
 	            ps.setString(10, hashedPassword);
 	        } else {
-	            // Pas de changement de mot de passe, récupérer l'ancien
 	            Citoyen existing = getById((Long) citoyen.getIdCitoyen());
 	            ps.setString(10, existing.getMotDePasse());
 	        }
@@ -180,21 +179,7 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                Citoyen c = new Citoyen();
-                c.setIdCitoyen(rs.getLong("ID_CITOYEN"));
-                c.setNom(rs.getString("NOM"));
-                c.setPrenom(rs.getString("PRENOM"));
-                c.setCin(rs.getString("CIN"));
-                c.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
-                c.setTelephone(rs.getString("TELEPHONE"));
-                c.setEmail(rs.getString("EMAIL"));
-				c.setEmailAuth(rs.getString("EMAIL_AUTH"));
-				c.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
-                c.setMotDePasse(rs.getString("MOT_DE_PASSE"));
-                c.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
-                c.setDateCreation(rs.getDate("DATE_CREATION"));
-                c.setIdRegion(rs.getLong("ID_REGION"));                
-                list.add(c);
+                list.add(mapResultSetToCitoyen(rs));
             }
 
         } catch (SQLException ex) {
@@ -212,22 +197,9 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 	    try (PreparedStatement ps = connection.prepareStatement(sql)) {
 	        ps.setLong(1, idRegion);
 	        try (ResultSet rs = ps.executeQuery()) {
-	            while (rs.next()) {
-	                Citoyen c = new Citoyen();
-	                c.setIdCitoyen(rs.getLong("ID_CITOYEN"));
-	                c.setNom(rs.getString("NOM"));
-	                c.setPrenom(rs.getString("PRENOM"));
-	                c.setCin(rs.getString("CIN"));
-	                c.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
-	                c.setTelephone(rs.getString("TELEPHONE"));
-	                c.setEmail(rs.getString("EMAIL"));
-					c.setEmailAuth(rs.getString("EMAIL_AUTH"));
-					c.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
-	                c.setMotDePasse(rs.getString("MOT_DE_PASSE"));
-	                c.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
-	                c.setDateCreation(rs.getDate("DATE_CREATION"));
-	                c.setIdRegion(rs.getLong("ID_REGION"));                
-	                list.add(c);
+	            while (rs.next()) {					
+                	list.add(mapResultSetToCitoyen(rs));              
+	                //list.add(c);
 	            }
 	        }
 	    } catch (SQLException ex) {
@@ -245,21 +217,7 @@ public class CitoyenCRUDImpl implements ICitoyenCRUD{
 			ps.setString(1, emailAuth);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
-					Citoyen c = new Citoyen();
-					c.setIdCitoyen(rs.getLong("ID_CITOYEN"));
-					c.setNom(rs.getString("NOM"));
-					c.setPrenom(rs.getString("PRENOM"));
-					c.setCin(rs.getString("CIN"));
-					c.setLieuNaissance(rs.getString("LIEU_NAISSANCE"));
-					c.setTelephone(rs.getString("TELEPHONE"));
-					c.setEmail(rs.getString("EMAIL"));
-					c.setEmailAuth(rs.getString("EMAIL_AUTH"));
-					c.setNomUtilisateur(rs.getString("NOM_UTILISATEUR"));
-					c.setMotDePasse(rs.getString("MOT_DE_PASSE"));
-					c.setDateNaissance(rs.getDate("DATE_NAISSANCE"));
-					c.setDateCreation(rs.getDate("DATE_CREATION"));
-					c.setIdRegion(rs.getLong("ID_REGION"));
-					return c;
+	                return mapResultSetToCitoyen(rs);
 				}
 			}
 		} catch (SQLException ex) {

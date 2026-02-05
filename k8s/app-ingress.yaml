@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: plateforme-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: plateforme.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: plateforme-service
+                port:
+                  number: 80
